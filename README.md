@@ -1,23 +1,36 @@
-# Projeto Raízes do Nordeste - Back-end
-Sistema de gerenciamento multicanal para rede de lanchonetes.
+# wrappy
 
-## 🚀 Tecnologias
-- Node.js e Express
-- SQLite e Sequelize (ORM)
-- Bcrypt.js (Segurança/LGPD)
+Callback wrapping utility
 
-## 🛠️ Como rodar o projeto
-1. Clone o repositório.
-2. No terminal, execute: `npm install`
-3. Inicie o servidor: `npm run dev`
-4. O banco SQLite será criado automaticamente.
+## USAGE
 
-## 📌 Endpoints Principais
-- `POST /users/register`: Cadastro de usuários.
-- `POST /users/login`: Autenticação (JWT).
-- `POST /orders/create`: Criação de pedido com **Simulação de Pagamento Mock**.
-- `GET /orders/all`: Listagem de pedidos (Cozinha/Adm).
+```javascript
+var wrappy = require("wrappy")
 
-## 🛡️ LGPD e Segurança
-- Senhas criptografadas com Hash (Bcrypt).
-- Controle de acesso por perfis (ADMIN, COZINHA, CLIENTE).
+// var wrapper = wrappy(wrapperFunction)
+
+// make sure a cb is called only once
+// See also: http://npm.im/once for this specific use case
+var once = wrappy(function (cb) {
+  var called = false
+  return function () {
+    if (called) return
+    called = true
+    return cb.apply(this, arguments)
+  }
+})
+
+function printBoo () {
+  console.log('boo')
+}
+// has some rando property
+printBoo.iAmBooPrinter = true
+
+var onlyPrintOnce = once(printBoo)
+
+onlyPrintOnce() // prints 'boo'
+onlyPrintOnce() // does nothing
+
+// random property is retained!
+assert.equal(onlyPrintOnce.iAmBooPrinter, true)
+```
